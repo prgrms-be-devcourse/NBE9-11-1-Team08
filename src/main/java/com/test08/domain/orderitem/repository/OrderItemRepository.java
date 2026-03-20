@@ -1,0 +1,7 @@
+package com.test08.domain.orderitem.repository;
+
+import com.test08.domain.orderitem.entity.OrderItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
+}
