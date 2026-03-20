@@ -25,4 +25,11 @@ public class Product {
 
     @Column(length = 50)
     private String category;
+
+    public Product(String name, int price, String imageUrl, String category) {
+        this.name = name;
+        this.price = price;
+        this.imageUrl = imageUrl;
+        this.category = category;
+    } // 생성자 추가 productRequest에서 받아서 product 엔티티로 변환 4개의 필드만 받는 생성자 (productId는 자동으로 생성되서 제외)
 }
