@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -55,4 +57,17 @@ public class ProductService {
         productRepository.deleteById(productId);
     }
 
+    public List<ProductResponse> findAllProducts() {
+        return productRepository.findAll()
+                .stream()
+                .map(product -> new ProductResponse(
+                        product.getProductId(),
+                        product.getName(),
+                        product.getPrice(),
+                        product.getImageUrl(),
+                        product.getCategory()
+                ))
+                .toList(); // 엔티티 리스트를 DTO 리스트로 변환하여 반환
+                //productResponse 스트림을 toList()로 리스트로 변환하여 반환
+    }
 }
