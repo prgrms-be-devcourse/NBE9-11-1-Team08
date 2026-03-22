@@ -28,7 +28,7 @@ public class ProductController {
     // 상품 조회 시 productId를 경로 변수로 받아서 해당 상품을 조회하도록 수정
     @GetMapping("/{productId}")
     public ProductResponse getProduct(@PathVariable int productId) {
-        return productService.findById(productId);
+        return productService.findProducts(productId);
     }
 
     @PutMapping("/{productId}")
