@@ -29,7 +29,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductResponse findById(int productId) {
+    public ProductResponse findProduct(int productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상품입니다."));
 
@@ -68,6 +68,6 @@ public class ProductService {
                         product.getCategory()
                 ))
                 .toList(); // 엔티티 리스트를 DTO 리스트로 변환하여 반환
-                //productResponse 스트림을 toList()로 리스트로 변환하여 반환
+        //productResponse 스트림을 toList()로 리스트로 변환하여 반환
     }
 }
