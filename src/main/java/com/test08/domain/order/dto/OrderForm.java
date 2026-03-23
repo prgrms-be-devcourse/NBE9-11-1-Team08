@@ -6,5 +6,6 @@ public record OrderForm(
         String email,
         String address,
         String postCode,
-        Map<Long, Integer> items
-) {}
+        Map<Integer, Integer> items
+) {
+}
