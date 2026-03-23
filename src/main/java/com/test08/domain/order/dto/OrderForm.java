@@ -1,4 +1,11 @@
 package com.test08.domain.order.dto;
 
-public record OrderForm() {
+import java.util.Map;
+
+public record OrderForm(
+        String email,
+        String address,
+        String postCode,
+        Map<Integer, Integer> items
+) {
 }
