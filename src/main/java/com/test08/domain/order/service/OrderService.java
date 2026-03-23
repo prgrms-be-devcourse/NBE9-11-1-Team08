@@ -2,6 +2,7 @@ package com.test08.domain.order.service;
 
 import com.test08.domain.order.dto.OrderForm;
 import com.test08.domain.order.entity.Order;
+import com.test08.domain.order.entity.OrderStatus;
 import com.test08.domain.order.repository.OrderRepository;
 import com.test08.domain.orderitem.entity.OrderItem;
 import com.test08.domain.orderitem.repository.OrderItemRepository;
@@ -23,22 +24,22 @@ public class OrderService {
 
     public Order saveOrder(OrderForm form) {
         Order order = orderRepository
-                .findByEmailAndAddressAndShippedFalse(form.email(), form.address())
-                .orElseGet(() -> orderRepository.save (
+                .findByEmailAndAddressAndStatus(form.email(), form.address(), OrderStatus.PENDING)
+                .orElseGet(() -> orderRepository.save(
                         Order.create(form.email(), form.address(), form.postCode())
                 ));
 
         List<OrderItem> existingItems = orderItemRepository.findAllByOrder(order);
 
         for (var entry : form.items().entrySet()) {
-            Long productId = entry.getKey();
+            int productId = entry.getKey();
             int quantity = entry.getValue();
 
             Product product = productRepository.findById(productId)
-                    .orElseThrow(()-> new IllegalArgumentException("상품 없음 : " +productId));
+                    .orElseThrow(() -> new IllegalArgumentException("상품 없음 : " + productId));
 
             existingItems.stream()
-                    .filter(item -> item.getProduct().getProductId().equals((productId)))
+                    .filter(item -> item.getProduct().getProductId() == productId)
                     .findFirst()
                     .ifPresentOrElse(
                             item -> item.addQuantity(quantity),

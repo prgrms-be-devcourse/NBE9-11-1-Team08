@@ -3,6 +3,8 @@ package com.test08.domain.order.entity;
 import com.test08.domain.orderitem.entity.OrderItem;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -14,7 +16,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Entity
-@Table(name="orders")
+@Table(name = "orders")
 @Getter
 public class Order {
 
@@ -28,10 +30,11 @@ public class Order {
     private LocalDateTime firstOrderTime;
     private LocalDateTime updatedTime;
     private int totalPrice;
-    private boolean shipped;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<OrderItem>  orderItems= new ArrayList<>();
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     public static Order create(String email, String address, String postCode) {
         Order order = new Order();
@@ -41,7 +44,7 @@ public class Order {
         order.firstOrderTime = LocalDateTime.now();
         order.updatedTime = LocalDateTime.now();
         order.totalPrice = 0;
-        order.shipped = false;
+        order.status = OrderStatus.PENDING;
         return order;
     }
 
