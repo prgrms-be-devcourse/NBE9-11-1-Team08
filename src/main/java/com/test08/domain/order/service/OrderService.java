@@ -15,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductRepository productRepository;
 
+    @Transactional
     public Order saveOrder(OrderForm form) {
         Order order = orderRepository
                 .findByEmailAndAddressAndStatus(form.email(), form.address(), OrderStatus.PENDING)
@@ -56,4 +56,14 @@ public class OrderService {
 
         return order;
     }
+
+    @Transactional
+    public void modifyStatus() {
+        List<Order> orders = orderRepository.findByStatus(OrderStatus.PENDING);
+
+        for (Order order : orders) {
+            order.modifyOrderStatus();
+        }
+    }
 }
+
