@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>주문 목록 조회</title>
+</head>
+<body class="container py-5">
+<div class="mx-auto" style="max-width: 840px;">
+    <h2 class="mb-4">주문 목록 조회</h2>
+
+    <div class="card p-3 mb-3">
+        <label for="email" class="form-label">이메일</label>
+        <div class="d-flex gap-2">
+            <input id="email" type="email" class="form-control" placeholder="example@email.com">
+            <button id="searchBtn" class="btn btn-dark">조회</button>
+        </div>
+    </div>
+
+    <div id="message" class="mb-3 text-muted"></div>
+    <div id="resultList" class="d-flex flex-column gap-2"></div>
+
+    <div class="mt-4">
+        <a href="/index.html" class="btn btn-outline-secondary">메인으로</a>
+    </div>
+</div>
+
+<script>
+    const emailInput = document.getElementById('email');
+    const searchBtn = document.getElementById('searchBtn');
+    const message = document.getElementById('message');
+    const resultList = document.getElementById('resultList');
+
+    function renderOrders(orders) {
+        if (!orders.length) {
+            message.textContent = '조회 결과가 없습니다.';
+            resultList.innerHTML = '';
+            return;
+        }
+
+        message.textContent = '조회 결과 ' + orders.length + '건';
+        resultList.innerHTML = orders.map(function (order) {
+            return '' +
+                '<div class="card p-3">' +
+                '<div><b>이메일:</b> ' + order.email + '</div>' +
+                '<div><b>주소:</b> ' + order.address + '</div>' +
+                '<div><b>우편번호:</b> ' + order.postCode + '</div>' +
+                '</div>';
+        }).join('');
+    }
+
+    async function searchOrders() {
+        const email = emailInput.value.trim();
+        if (!email) {
+            message.textContent = '이메일을 입력해 주세요.';
+            resultList.innerHTML = '';
+            return;
+        }
+
+        message.textContent = '조회 중...';
+        resultList.innerHTML = '';
+
+        try {
+            const response = await fetch('/api/orders/search?email=' + encodeURIComponent(email));
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+            const orders = await response.json();
+            renderOrders(orders);
+        } catch (e) {
+            message.textContent = '조회 중 오류가 발생했습니다.';
+            resultList.innerHTML = '';
+        }
+    }
+
+    searchBtn.addEventListener('click', searchOrders);
+    emailInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            searchOrders();
+        }
+    });
+</script>
+</body>
+</html>
