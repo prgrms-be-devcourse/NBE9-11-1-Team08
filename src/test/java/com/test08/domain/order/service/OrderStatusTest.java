@@ -1,11 +1,10 @@
-package com.test08;
+package com.test08.domain.order.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.test08.domain.order.entity.Order;
 import com.test08.domain.order.entity.OrderStatus;
 import com.test08.domain.order.repository.OrderRepository;
-import com.test08.domain.order.service.OrderService;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class OrderServiceTest {
+class OrderStatusTest {
 
     @Autowired
     private OrderService orderService;
