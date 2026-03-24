@@ -1,13 +1,11 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>8르페 주문</title>
     <style>
         body {
             background: #ddd;
@@ -15,11 +13,11 @@
 
         .card {
             margin: auto;
-            max-width: 950px;
-            width: 90%;
+            max-width: 1100px;
+            width: 92%;
             box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.19);
             border-radius: 1rem;
-            border: transparent
+            border: transparent;
         }
 
         .summary {
@@ -27,126 +25,361 @@
             border-top-right-radius: 1rem;
             border-bottom-right-radius: 1rem;
             padding: 4vh;
-            color: rgb(65, 65, 65)
+            color: rgb(65, 65, 65);
         }
 
         @media (max-width: 767px) {
             .summary {
                 border-top-right-radius: unset;
-                border-bottom-left-radius: 1rem
+                border-bottom-left-radius: 1rem;
             }
         }
 
         .row {
-            margin: 0
-        }
-
-        .title b {
-            font-size: 1.5rem
+            margin: 0;
         }
 
         .col-2,
         .col {
-            padding: 0 1vh
+            padding: 0 1vh;
         }
 
         img {
-            width: 3.5rem
+            width: 4rem;
+            height: 4rem;
+            object-fit: cover;
+            border-radius: 0.5rem;
         }
 
-        hr {
-            margin-top: 1.25rem
-        }
         .products {
             width: 100%;
+            min-height: 320px;
         }
-        .products .price, .products .action {
-            line-height: 38px;
-        }
+
+        .products .price,
         .products .action {
             line-height: 38px;
         }
 
+        .product-name {
+            font-weight: 600;
+        }
+
+        .quantity-badge {
+            min-width: 2.2rem;
+        }
     </style>
-    <title>Hello, world!</title>
 </head>
-<body class="container-fluid">
+<body class="container-fluid py-4">
 <div class="row justify-content-center m-4">
-    <h1 class="text-center">Grids & Circle</h1>
+    <h1 class="text-center">8르페</h1>
+    <p class="text-center text-muted mb-0">상품 조회, 장바구니 구성, 주문 생성</p>
 </div>
 <div class="card">
     <div class="row">
         <div class="col-md-8 mt-4 d-flex flex-column align-items-start p-3 pt-0">
-            <h5 class="flex-grow-0"><b>상품 목록</b></h5>
-            <ul class="list-group products">
-                <li class="list-group-item d-flex mt-3">
-                    <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/HKOFQYa.jpeg" alt=""></div>
-                    <div class="col">
-                        <div class="row text-muted">커피콩</div>
-                        <div class="row">Columbia Nariñó</div>
-                    </div>
-                    <div class="col text-center price">5000원</div>
-                    <div class="col text-end action"><a class="btn btn-small btn-outline-dark" href="">추가</a></div>
-                </li>
-                <li class="list-group-item d-flex mt-2">
-                    <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/HKOFQYa.jpeg" alt=""></div>
-                    <div class="col">
-                        <div class="row text-muted">커피콩</div>
-                        <div class="row">Columbia Nariñó</div>
-                    </div>
-                    <div class="col text-center price">5000원</div>
-                    <div class="col text-end action"><a class="btn btn-small btn-outline-dark" href="">추가</a></div>
-                </li>
-                <li class="list-group-item d-flex mt-2">
-                    <div class="col-2"><img class="img-fluid" src="https://i.imgur.com/HKOFQYa.jpeg" alt=""></div>
-                    <div class="col">
-                        <div class="row text-muted">커피콩</div>
-                        <div class="row">Columbia Nariñó</div>
-                    </div>
-                    <div class="col text-center price">5000원</div>
-                    <div class="col text-end action"><a class="btn btn-small btn-outline-dark" href="">추가</a></div>
-                </li>
-            </ul>
+            <div class="d-flex justify-content-between align-items-center w-100 mb-3">
+                <h5 class="m-0"><b>상품 목록</b></h5>
+                <a class="btn btn-outline-dark btn-sm" href="/product.html">상품 관리</a>
+            </div>
+            <div id="productMessage" class="text-muted mb-3">상품을 불러오는 중...</div>
+            <ul class="list-group products" id="productList"></ul>
         </div>
         <div class="col-md-4 summary p-4">
-            <div>
-                <h5 class="m-0 p-0"><b>Summary</b></h5>
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="m-0 p-0"><b>주문서</b></h5>
+                <a class="btn btn-outline-secondary btn-sm" href="/orders.html">주문 목록 조회</a>
             </div>
             <hr>
-            <div class="row">
-                <h6 class="p-0">Columbia Nariñó <span class="badge bg-dark text-">2개</span></h6>
-            </div>
-            <div class="row">
-                <h6 class="p-0">Brazil Serra Do Caparaó <span class="badge bg-dark">2개</span></h6>
-            </div>
-            <div class="row">
-                <h6 class="p-0">Columbia Nariñó <span class="badge bg-dark">2개</span></h6>
-            </div>
-            <form>
+            <div id="cartSummary" class="mb-3 text-muted">상품을 담아 주세요.</div>
+            <form id="orderForm">
                 <div class="mb-3">
                     <label for="email" class="form-label">이메일</label>
-                    <input type="email" class="form-control mb-1" id="email">
+                    <input type="email" class="form-control mb-1" id="email" placeholder="example@email.com">
                 </div>
                 <div class="mb-3">
                     <label for="address" class="form-label">주소</label>
-                    <input type="text" class="form-control mb-1" id="address">
+                    <input type="text" class="form-control mb-1" id="address" placeholder="서울시 강남구 테헤란로 123">
                 </div>
                 <div class="mb-3">
                     <label for="postcode" class="form-label">우편번호</label>
-                    <input type="text" class="form-control" id="postcode">
+                    <input type="text" class="form-control" id="postcode" placeholder="12345" maxlength="5">
                 </div>
-                <div>당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다.</div>
+                <div class="small text-muted">당일 오후 2시 이후의 주문은 다음날 배송을 시작합니다.</div>
             </form>
-            <div class="row pt-2 pb-2 border-top">
-                <h5 class="col">총금액</h5>
-                <h5 class="col text-end">15000원</h5>
+            <div class="row pt-3 pb-2 border-top mt-3">
+                <h5 class="col">총수량</h5>
+                <h5 class="col text-end" id="totalQuantity">0개</h5>
             </div>
+            <div class="row pb-2">
+                <h5 class="col">총금액</h5>
+                <h5 class="col text-end" id="totalPrice">0원</h5>
+            </div>
+            <div id="submitMessage" class="small mb-2 text-muted"></div>
             <div class="d-flex gap-2">
-                <button class="btn btn-dark flex-fill">결제하기</button>
-                <a class="btn btn-outline-dark flex-fill" href="/orders.html">주문 목록 조회</a>
+                <button id="submitOrderBtn" class="btn btn-dark flex-fill" type="button">결제하기</button>
+                <button id="resetCartBtn" class="btn btn-outline-dark flex-fill" type="button">장바구니 비우기</button>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    const STORAGE_KEY = 'local-orders';
+    const DEFAULT_IMAGE = 'https://i.imgur.com/HKOFQYa.jpeg';
+
+    const productList = document.getElementById('productList');
+    const productMessage = document.getElementById('productMessage');
+    const cartSummary = document.getElementById('cartSummary');
+    const totalQuantity = document.getElementById('totalQuantity');
+    const totalPrice = document.getElementById('totalPrice');
+    const submitMessage = document.getElementById('submitMessage');
+    const submitOrderBtn = document.getElementById('submitOrderBtn');
+    const resetCartBtn = document.getElementById('resetCartBtn');
+
+    const cart = {};
+    let products = [];
+
+    function formatPrice(value) {
+        return value.toLocaleString() + '원';
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function getProduct(productId) {
+        return products.find(function (product) {
+            return product.productId === productId;
+        });
+    }
+
+    function saveOrderToLocal(orderResponse) {
+        const savedOrders = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const itemDetails = Object.keys(cart).map(function (key) {
+            const productId = Number(key);
+            const product = getProduct(productId);
+            return {
+                productId: productId,
+                name: product ? product.name : '알 수 없는 상품',
+                quantity: cart[productId],
+                price: product ? product.price : 0
+            };
+        });
+
+        savedOrders.unshift({
+            orderId: orderResponse.orderId,
+            email: orderResponse.email,
+            address: orderResponse.address,
+            postCode: orderResponse.postCode,
+            totalPrice: orderResponse.totalPrice,
+            status: orderResponse.status,
+            items: itemDetails,
+            createdAt: new Date().toISOString()
+        });
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(savedOrders));
+    }
+
+    function renderCart() {
+        const entries = Object.keys(cart).filter(function (key) {
+            return cart[key] > 0;
+        });
+
+        if (!entries.length) {
+            cartSummary.innerHTML = '<div class="text-muted">상품을 담아 주세요.</div>';
+            totalQuantity.textContent = '0개';
+            totalPrice.textContent = '0원';
+            return;
+        }
+
+        let quantitySum = 0;
+        let priceSum = 0;
+
+        cartSummary.innerHTML = entries.map(function (key) {
+            const productId = Number(key);
+            const quantity = cart[productId];
+            const product = getProduct(productId);
+
+            if (!product) {
+                return '';
+            }
+
+            quantitySum += quantity;
+            priceSum += product.price * quantity;
+
+            return '' +
+                '<div class="d-flex justify-content-between align-items-center border-bottom py-2">' +
+                '<div class="pe-2">' +
+                '<div class="fw-bold">' + escapeHtml(product.name) + '</div>' +
+                '<div class="small text-muted">' + formatPrice(product.price) + ' x ' + quantity + '</div>' +
+                '</div>' +
+                '<span class="badge bg-dark quantity-badge">' + quantity + '개</span>' +
+                '</div>';
+        }).join('');
+
+        totalQuantity.textContent = quantitySum + '개';
+        totalPrice.textContent = formatPrice(priceSum);
+    }
+
+    function changeQuantity(productId, delta) {
+        const nextValue = (cart[productId] || 0) + delta;
+        if (nextValue <= 0) {
+            delete cart[productId];
+        } else {
+            cart[productId] = nextValue;
+        }
+
+        renderProducts();
+        renderCart();
+    }
+
+    function renderProducts() {
+        if (!products.length) {
+            productList.innerHTML = '';
+            productMessage.textContent = '등록된 상품이 없습니다. 상품 관리에서 먼저 추가해 주세요.';
+            return;
+        }
+
+        productMessage.textContent = '원하는 상품 수량을 조절한 뒤 주문서를 작성해 주세요.';
+        productList.innerHTML = products.map(function (product, index) {
+            const imageUrl = product.imageUrl && product.imageUrl !== 'default.jpg' ? product.imageUrl : DEFAULT_IMAGE;
+            const quantity = cart[product.productId] || 0;
+            const marginClass = index === 0 ? 'mt-3' : 'mt-2';
+
+            return '' +
+                '<li class="list-group-item d-flex align-items-center ' + marginClass + '">' +
+                '<div class="col-2"><img class="img-fluid" src="' + escapeHtml(imageUrl) + '" alt=""></div>' +
+                '<div class="col">' +
+                '<div class="row text-muted">' + escapeHtml(product.category || '미분류') + '</div>' +
+                '<div class="row product-name">' + escapeHtml(product.name) + '</div>' +
+                '</div>' +
+                '<div class="col text-center price">' + formatPrice(product.price) + '</div>' +
+                '<div class="col text-end action">' +
+                '<div class="btn-group" role="group">' +
+                '<button class="btn btn-outline-secondary btn-sm" type="button" onclick="changeQuantity(' + product.productId + ', -1)">-</button>' +
+                '<button class="btn btn-dark btn-sm" type="button" disabled>' + quantity + '</button>' +
+                '<button class="btn btn-outline-secondary btn-sm" type="button" onclick="changeQuantity(' + product.productId + ', 1)">+</button>' +
+                '</div>' +
+                '</div>' +
+                '</li>';
+        }).join('');
+    }
+
+    async function loadProducts() {
+        productMessage.textContent = '상품을 불러오는 중...';
+
+        try {
+            const response = await fetch('/products');
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+
+            products = await response.json();
+            renderProducts();
+            renderCart();
+        } catch (error) {
+            products = [];
+            productList.innerHTML = '';
+            productMessage.textContent = '상품을 불러오지 못했습니다. 백엔드 서버가 실행 중인지 확인해 주세요.';
+        }
+    }
+
+    function validateOrderForm() {
+        const email = document.getElementById('email').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const postCode = document.getElementById('postcode').value.trim();
+        const items = Object.keys(cart);
+
+        if (!items.length) {
+            submitMessage.textContent = '장바구니에 상품을 한 개 이상 담아 주세요.';
+            return null;
+        }
+
+        if (!email) {
+            submitMessage.textContent = '이메일을 입력해 주세요.';
+            return null;
+        }
+
+        if (!address) {
+            submitMessage.textContent = '주소를 입력해 주세요.';
+            return null;
+        }
+
+        if (!/^\d{5}$/.test(postCode)) {
+            submitMessage.textContent = '우편번호는 5자리 숫자여야 합니다.';
+            return null;
+        }
+
+        return {
+            email: email,
+            address: address,
+            postCode: postCode,
+            items: Object.keys(cart).reduce(function (acc, key) {
+                acc[key] = cart[key];
+                return acc;
+            }, {})
+        };
+    }
+
+    async function submitOrder() {
+        const payload = validateOrderForm();
+        if (!payload) {
+            return;
+        }
+
+        submitOrderBtn.disabled = true;
+        submitMessage.textContent = '주문을 전송하는 중...';
+
+        try {
+            const response = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+
+            const orderResponse = await response.json();
+            saveOrderToLocal(orderResponse);
+
+            Object.keys(cart).forEach(function (key) {
+                delete cart[key];
+            });
+
+            document.getElementById('orderForm').reset();
+            renderProducts();
+            renderCart();
+            submitMessage.textContent = '주문이 완료되었습니다. 주문 번호: ' + orderResponse.orderId;
+        } catch (error) {
+            submitMessage.textContent = '주문 처리에 실패했습니다. 입력값과 서버 상태를 확인해 주세요.';
+        } finally {
+            submitOrderBtn.disabled = false;
+        }
+    }
+
+    function resetCart() {
+        Object.keys(cart).forEach(function (key) {
+            delete cart[key];
+        });
+        renderProducts();
+        renderCart();
+        submitMessage.textContent = '';
+    }
+
+    submitOrderBtn.addEventListener('click', submitOrder);
+    resetCartBtn.addEventListener('click', resetCart);
+
+    loadProducts();
+</script>
 </body>
 </html>
