@@ -1,5 +1,17 @@
 window.onload = getAllProducts;
 
+function renderFormButtons(isEditing = false) {
+    const primaryButtonText = isEditing ? "수정 완료" : "등록하기";
+    const primaryButtonAction = isEditing ? "updateProduct()" : "createProduct()";
+    const cancelButton = isEditing
+        ? `<button class="btn btn-outline-secondary col-12 mb-2" type="button" onclick="resetForm()">취소</button>`
+        : "";
+
+    document.getElementById('button-area').innerHTML = `
+        <button class="btn btn-dark col-12 mb-2" type="button" onclick="${primaryButtonAction}">${primaryButtonText}</button>
+        ${cancelButton}`;
+}
+
 async function getAllProducts() {
     const response = await fetch('/products');
     const products = await response.json();
@@ -71,10 +83,7 @@ function prepareUpdate(id, name, price, category, imageUrl) {
     document.getElementById('category').value = category;
     document.getElementById('imageUrl').value = imageUrl === "default.jpg" ? "" : imageUrl;
 
-    // 수정/취소 버튼 세트 (바닥에 위치함)
-    document.getElementById('button-area').innerHTML = `
-        <button class="btn btn-dark col-12 mb-2" onclick="updateProduct()">수정 완료</button>
-        <button class="btn btn-outline-secondary col-12" onclick="resetForm()">취소</button>`;
+    renderFormButtons(true);
 }
 
 async function updateProduct() {
@@ -108,5 +117,5 @@ async function deleteProduct(id) {
 function resetForm() {
     document.getElementById('form-title').innerText = "상품 등록";
     document.getElementById('product-form').reset();
-    document.getElementById('button-area').innerHTML = `<button class="btn btn-dark col-12" onclick="createProduct()">등록하기</button>`;
+    renderFormButtons(false);
 }
