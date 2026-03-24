@@ -3,6 +3,7 @@ package com.test08.domain.product.controller;
 import com.test08.domain.product.dto.ProductRequest;
 import com.test08.domain.product.dto.ProductResponse;
 import com.test08.domain.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,8 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public String createProduct(@RequestBody ProductRequest productRequest) {
+
+    public String createProduct(@Valid @RequestBody ProductRequest productRequest) {
         productService.createProduct(productRequest);
         return "상품 등록 완료";
     }
@@ -32,7 +34,7 @@ public class ProductController {
     }
 
     @PutMapping("/{productId}")
-    public String updateProduct(@PathVariable int productId, @RequestBody ProductRequest productRequest) {
+    public String updateProduct(@PathVariable int productId, @Valid @RequestBody ProductRequest productRequest) {
         productService.updateProduct(productId, productRequest);
         return "상품 수정 완료";
     }
