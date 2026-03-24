@@ -20,4 +20,9 @@ public class HomeController {
     public String orders() {
         return "forward:/orders.html";
     }
+
+    @GetMapping("/admin/orders")
+    public String adminOrders() {
+        return "forward:/admin-orders.html";
+    }
 }
