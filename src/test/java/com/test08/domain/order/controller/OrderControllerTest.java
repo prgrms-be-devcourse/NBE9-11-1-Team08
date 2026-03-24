@@ -1,0 +1,108 @@
+package com.test08.domain.order.controller;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.test08.domain.order.dto.OrderForm;
+import com.test08.domain.order.entity.Order;
+import com.test08.domain.order.service.OrderService;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.Map;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(OrderController.class)
+class OrderControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
+    private OrderService orderService;
+
+    @Test
+    @DisplayName("유효한 요청 - 주문 생성 성공")
+    void createOrder_validRequest() throws Exception {
+        OrderForm form = new OrderForm("test@test.com", "서울시 강남구", "12345", Map.of(1, 2));
+        Order order = Order.create(form.email(), form.address(), form.postCode());
+
+        given(orderService.saveOrder(any())).willReturn(order);
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("이메일 형식 오류 - 400 반환")
+    void createOrder_invalidEmail() throws Exception {
+        OrderForm form = new OrderForm("invalid-email", "서울시 강남구", "12345", Map.of(1, 2));
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").exists());
+    }
+
+    @Test
+    @DisplayName("이메일 빈 값 - 400 반환")
+    void createOrder_blankEmail() throws Exception {
+        OrderForm form = new OrderForm("", "서울시 강남구", "12345", Map.of(1, 2));
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email").exists());
+    }
+
+    @Test
+    @DisplayName("주소 빈 값 - 400 반환")
+    void createOrder_blankAddress() throws Exception {
+        OrderForm form = new OrderForm("test@test.com", "", "12345", Map.of(1, 2));
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.address").exists());
+    }
+
+    @Test
+    @DisplayName("우편번호 5자리 숫자 아님 - 400 반환")
+    void createOrder_invalidPostCode() throws Exception {
+        OrderForm form = new OrderForm("test@test.com", "서울시 강남구", "1234", Map.of(1, 2));
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.postCode").exists());
+    }
+
+    @Test
+    @DisplayName("우편번호 숫자 아닌 문자 포함 - 400 반환")
+    void createOrder_postCodeWithLetters() throws Exception {
+        OrderForm form = new OrderForm("test@test.com", "서울시 강남구", "1234a", Map.of(1, 2));
+
+        mockMvc.perform(post("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.postCode").exists());
+    }
+}

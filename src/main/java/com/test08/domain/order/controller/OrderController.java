@@ -6,6 +6,7 @@ import com.test08.domain.order.entity.Order;
 import com.test08.domain.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +20,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody OrderForm orderForm) {
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody @Valid OrderForm orderForm) {
         Order order = orderService.saveOrder(orderForm);
         return ResponseEntity.ok(OrderResponse.from(order));
     }
