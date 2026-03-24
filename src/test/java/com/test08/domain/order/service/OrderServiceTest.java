@@ -1,24 +1,27 @@
 package com.test08.domain.order.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
 import com.test08.domain.order.dto.OrderForm;
+import com.test08.domain.order.dto.OrderResponse;
 import com.test08.domain.order.entity.Order;
 import com.test08.domain.order.entity.OrderStatus;
 import com.test08.domain.order.repository.OrderRepository;
 import com.test08.domain.product.entity.Product;
 import com.test08.domain.product.repository.ProductRepository;
-import java.util.Map;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
@@ -116,5 +119,29 @@ class OrderServiceTest {
         assertThat(existingOrder.getOrderItems().stream()
                 .anyMatch(item -> item.getProduct().getProductId() == 2 && item.getQuantity() == 1))
                 .isTrue();
+    }
+
+    @Test
+    @DisplayName("관리자: 모든 주문 목록 조회 성공")
+    void findAllOrders_success() {
+        // given
+        Product product = new Product(1, "Columbia Nariño", 5000, "img.jpg", "커피콩");
+        Order order1 = Order.create("user1@test.com", "서울시 강남구", "12345");
+        order1.addOrMergeItem(product, 2);
+
+        Order order2 = Order.create("user2@test.com", "서울시 서초구", "54321");
+        order2.addOrMergeItem(product, 1);
+
+        given(orderRepository.findAll()).willReturn(List.of(order1, order2));
+
+        // when
+        List<OrderResponse> result = orderService.findAllOrders();
+
+        // then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(0).email()).isEqualTo("user1@test.com");
+        assertThat(result.get(0).items().get(0).name()).isEqualTo("Columbia Nariño"); // 상품명 포함 확인
+        assertThat(result.get(1).email()).isEqualTo("user2@test.com");
+        verify(orderRepository).findAll();
     }
 }
