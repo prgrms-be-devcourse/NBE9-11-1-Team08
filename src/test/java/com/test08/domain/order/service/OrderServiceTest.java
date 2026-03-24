@@ -2,7 +2,6 @@ package com.test08.domain.order.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -10,11 +9,8 @@ import com.test08.domain.order.dto.OrderForm;
 import com.test08.domain.order.entity.Order;
 import com.test08.domain.order.entity.OrderStatus;
 import com.test08.domain.order.repository.OrderRepository;
-import com.test08.domain.orderitem.entity.OrderItem;
-import com.test08.domain.orderitem.repository.OrderItemRepository;
 import com.test08.domain.product.entity.Product;
 import com.test08.domain.product.repository.ProductRepository;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -34,9 +30,6 @@ class OrderServiceTest {
     private OrderRepository orderRepository;
 
     @Mock
-    private OrderItemRepository orderItemRepository;
-
-    @Mock
     private ProductRepository productRepository;
 
     @Test
@@ -47,17 +40,16 @@ class OrderServiceTest {
                 "test@test.com",
                 "서울시 강남구",
                 "12345",
-                Map.of(1, 2)  // 상품1번 2개 (Integer 타입!)
+                Map.of(1, 2)
         );
 
         Product product = new Product(1, "Columbia Nariño", 5000, "img.jpg", "커피콩");
         Order newOrder = Order.create(form.email(), form.address(), form.postCode());
 
         given(orderRepository.findByEmailAndAddressAndStatus(any(), any(), any()))
-                .willReturn(Optional.empty());  // 기존 주문 없음
+                .willReturn(Optional.empty());
         given(orderRepository.save(any())).willReturn(newOrder);
         given(productRepository.findById(1)).willReturn(Optional.of(product));
-        given(orderItemRepository.findAllByOrder(any())).willReturn(List.of());
 
         // when
         Order result = orderService.saveOrder(form);
@@ -65,7 +57,7 @@ class OrderServiceTest {
         // then
         assertThat(result.getEmail()).isEqualTo("test@test.com");
         assertThat(result.getStatus()).isEqualTo(OrderStatus.PENDING);
-        verify(orderRepository).save(any());  // save 호출됐는지 확인
+        verify(orderRepository).save(any());
     }
 
     @Test
@@ -81,18 +73,17 @@ class OrderServiceTest {
 
         Product product = new Product(1, "Columbia Nariño", 5000, "img.jpg", "커피콩");
         Order existingOrder = Order.create("test@test.com", "서울시 강남구", "12345");
-        OrderItem existingItem = OrderItem.create(existingOrder, product, 2);  // 이미 2개
+        existingOrder.addOrMergeItem(product, 2);  // 이미 2개 담긴 상태
 
         given(orderRepository.findByEmailAndAddressAndStatus(any(), any(), any()))
-                .willReturn(Optional.of(existingOrder));  // 기존 주문 있음
+                .willReturn(Optional.of(existingOrder));
         given(productRepository.findById(1)).willReturn(Optional.of(product));
-        given(orderItemRepository.findAllByOrder(any())).willReturn(List.of(existingItem));
 
         // when
         orderService.saveOrder(form);
 
         // then
-        assertThat(existingItem.getQuantity()).isEqualTo(3);  // 2 + 1 = 3
+        assertThat(existingOrder.getOrderItems().get(0).getQuantity()).isEqualTo(3);  // 2 + 1 = 3
     }
 
     @Test
@@ -109,25 +100,21 @@ class OrderServiceTest {
         Product product1 = new Product(1, "Columbia Nariño", 5000, "img.jpg", "커피콩");
         Product product2 = new Product(2, "Brazil Serra", 6000, "img.jpg", "커피콩");
         Order existingOrder = Order.create("test@test.com", "서울시 강남구", "12345");
-        OrderItem existingItem = OrderItem.create(existingOrder, product1, 2);  // 상품1번 2개
+        existingOrder.addOrMergeItem(product1, 2);  // 상품1번 2개 담긴 상태
 
         given(orderRepository.findByEmailAndAddressAndStatus(any(), any(), any()))
                 .willReturn(Optional.of(existingOrder));
         given(productRepository.findById(2)).willReturn(Optional.of(product2));
-        given(orderItemRepository.findAllByOrder(any()))
-                .willReturn(List.of(existingItem));  // 기존엔 상품1번만 있음
 
         // when
         orderService.saveOrder(form);
 
         // then
-        // 상품1번은 그대로 2개
-        assertThat(existingItem.getQuantity()).isEqualTo(2);
-
-        // 상품2번은 1개로 새로 저장됐는지 확인
-        verify(orderItemRepository).save(argThat(item ->
-                item.getProduct().getProductId() == 2
-                        && item.getQuantity() == 1
-        ));
+        assertThat(existingOrder.getOrderItems().stream()
+                .anyMatch(item -> item.getProduct().getProductId() == 1 && item.getQuantity() == 2))
+                .isTrue();  // 상품1번은 그대로 2개
+        assertThat(existingOrder.getOrderItems().stream()
+                .anyMatch(item -> item.getProduct().getProductId() == 2 && item.getQuantity() == 1))
+                .isTrue();
     }
 }
