@@ -1,6 +1,7 @@
 package com.test08.domain.order.entity;
 
 import com.test08.domain.orderitem.entity.OrderItem;
+import com.test08.domain.product.entity.Product;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,8 +18,6 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -63,16 +62,25 @@ public class Order {
         return order;
     }
 
-    public void modifyOrderStatus() {
-        this.status = OrderStatus.SHIPPED;
+    public void addOrMergeItem(Product product, int quantity) {
+        this.orderItems.stream()
+                .filter(item -> item.getProduct().getProductId() == product.getProductId())
+                .findFirst()
+                .ifPresentOrElse(
+                        item -> item.addQuantity(quantity),
+                        () -> this.orderItems.add(OrderItem.create(this, product, quantity))
+                );
+    }
+
+    public void recalculateTotalPrice() {
+        this.totalPrice = this.orderItems.stream()
+                .mapToInt(i -> i.getPrice() * i.getQuantity())
+                .sum();
         this.updatedTime = LocalDateTime.now();
     }
 
-    public void updateTotalPrice(int totalPrice) {
-        this.totalPrice = totalPrice;
-    }
-
-    public void updateTime() {
+    public void modifyOrderStatus() {
+        this.status = OrderStatus.SHIPPED;
         this.updatedTime = LocalDateTime.now();
     }
 }
