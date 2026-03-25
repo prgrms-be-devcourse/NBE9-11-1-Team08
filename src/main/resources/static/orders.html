@@ -31,7 +31,6 @@
 </div>
 
 <script>
-    const STORAGE_KEY = 'local-orders';
 
     const emailInput = document.getElementById('email');
     const searchBtn = document.getElementById('searchBtn');
@@ -53,14 +52,6 @@
         }
 
         return date.toLocaleString('ko-KR');
-    }
-
-    function getSavedOrders() {
-        try {
-            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-        } catch (error) {
-            return [];
-        }
     }
 
     function renderOrders(orders) {
@@ -91,7 +82,7 @@
                 '</div>' +
                 '<div class="text-end">' +
                 '<div><b>상태:</b> ' + order.status + '</div>' +
-                '<div><b>주문시각:</b> ' + formatDate(order.createdAt) + '</div>' +
+                '<div><b>주문시각:</b> ' + formatDate(order.firstOrderTime) + '</div>' +
                 '<div><b>총금액:</b> ' + formatPrice(order.totalPrice) + '</div>' +
                 '</div>' +
                 '</div>' +
@@ -101,18 +92,21 @@
     }
 
     function searchOrders() {
-        const email = emailInput.value.trim().toLowerCase();
+        const email = emailInput.value.trim();
         if (!email) {
             message.textContent = '이메일을 입력해 주세요.';
             resultList.innerHTML = '';
             return;
         }
 
-        const orders = getSavedOrders().filter(function (order) {
-            return String(order.email || '').toLowerCase() === email;
-        });
-
-        renderOrders(orders);
+        fetch('/api/orders')
+            .then(response => response.json())
+            .then(orders => {
+                const filtered = orders.filter(order =>
+                    order.email.toLowerCase() === email.toLowerCase()
+                );
+                renderOrders(filtered);
+            });
     }
 
     searchBtn.addEventListener('click', searchOrders);
