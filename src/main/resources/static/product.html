@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <title>Product Management</title>
+</head>
+<body class="container-fluid">
+<div class="row justify-content-center m-4">
+    <h1 class="text-center">8르페</h1>
+    <h2 class="text-center">상품 관리</h2>
+</div>
+<div class="card">
+    <div class="row">
+        <div class="col-md-8 mt-4 d-flex flex-column align-items-start p-3 pt-0">
+            <h5 class="flex-grow-0"><b>상품 목록</b></h5>
+            <ul class="list-group products" id="product-list">
+            </ul>
+        </div>
+
+        <div class="col-md-4 summary p-4">
+            <div class="d-flex justify-content-between align-items-center gap-2">
+                <h5 class="m-0 p-0"><b id="form-title">상품 등록</b></h5>
+                <a href="/" class="btn btn-outline-secondary btn-sm">메인으로</a>
+            </div>
+            <hr>
+
+            <form id="product-form" class="flex-grow-1">
+                <input type="hidden" id="current-id">
+                <div class="mb-3">
+                    <label class="form-label">상품명 <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control mb-1" id="name" placeholder="상품명을 적어주세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">가격 <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control mb-1" id="price" placeholder="가격을 입력해주세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">카테고리</label>
+                    <input type="text" class="form-control mb-1" id="category" placeholder="카테고리를 적어주세요">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">상품 이미지 URL</label>
+                    <input type="text" class="form-control mb-1" id="imageUrl" placeholder="이미지 주소를 넣어주세요">
+                </div>
+            </form>
+
+            <div id="button-area" class="mt-auto pt-3">
+                <button class="btn btn-dark col-12 mb-2" type="button" onclick="createProduct()">등록하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/product.js"></script>
+</body>
+</html>

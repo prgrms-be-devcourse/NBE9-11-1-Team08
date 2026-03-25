@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <title>주문 목록 조회</title>
+</head>
+<body class="container py-5">
+<div class="mx-auto" style="max-width: 920px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">주문 목록 조회</h2>
+        <div class="d-flex gap-2">
+            <a href="/admin/orders" class="btn btn-outline-dark">전체 주문 관리</a>
+            <a href="/" class="btn btn-outline-secondary">메인으로</a>
+        </div>
+    </div>
+
+    <div class="card p-3 mb-3">
+        <label for="email" class="form-label">이메일</label>
+        <div class="d-flex gap-2">
+            <input id="email" type="email" class="form-control" placeholder="example@email.com">
+            <button id="searchBtn" class="btn btn-dark">조회</button>
+        </div>
+        <div class="small text-muted mt-2">메인 화면에서 생성한 주문을 브라우저 기준으로 조회합니다.</div>
+    </div>
+
+    <div id="message" class="mb-3 text-muted"></div>
+    <div id="resultList" class="d-flex flex-column gap-3"></div>
+</div>
+
+<script>
+
+    const emailInput = document.getElementById('email');
+    const searchBtn = document.getElementById('searchBtn');
+    const message = document.getElementById('message');
+    const resultList = document.getElementById('resultList');
+
+    function formatPrice(value) {
+        return Number(value || 0).toLocaleString() + '원';
+    }
+
+    function formatDate(value) {
+        if (!value) {
+            return '-';
+        }
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleString('ko-KR');
+    }
+
+    function renderOrders(orders) {
+        if (!orders.length) {
+            message.textContent = '조회 결과가 없습니다.';
+            resultList.innerHTML = '';
+            return;
+        }
+
+        message.textContent = '조회 결과 ' + orders.length + '건';
+        resultList.innerHTML = orders.map(function (order) {
+            const itemsHtml = (order.items || []).map(function (item) {
+                return '' +
+                    '<li class="list-group-item d-flex justify-content-between align-items-center">' +
+                    '<span>' + item.name + ' x ' + item.quantity + '</span>' +
+                    '<span>' + formatPrice(item.price * item.quantity) + '</span>' +
+                    '</li>';
+            }).join('');
+
+            return '' +
+                '<div class="card p-3">' +
+                '<div class="d-flex justify-content-between align-items-start mb-2">' +
+                '<div>' +
+                '<div><b>주문번호:</b> ' + order.orderId + '</div>' +
+                '<div><b>이메일:</b> ' + order.email + '</div>' +
+                '<div><b>주소:</b> ' + order.address + '</div>' +
+                '<div><b>우편번호:</b> ' + order.postCode + '</div>' +
+                '</div>' +
+                '<div class="text-end">' +
+                '<div><b>상태:</b> ' + order.status + '</div>' +
+                '<div><b>주문시각:</b> ' + formatDate(order.firstOrderTime) + '</div>' +
+                '<div><b>총금액:</b> ' + formatPrice(order.totalPrice) + '</div>' +
+                '</div>' +
+                '</div>' +
+                '<ul class="list-group">' + itemsHtml + '</ul>' +
+                '</div>';
+        }).join('');
+    }
+
+    function searchOrders() {
+        const email = emailInput.value.trim();
+        if (!email) {
+            message.textContent = '이메일을 입력해 주세요.';
+            resultList.innerHTML = '';
+            return;
+        }
+
+        fetch('/api/orders')
+            .then(response => response.json())
+            .then(orders => {
+                const filtered = orders.filter(order =>
+                    order.email.toLowerCase() === email.toLowerCase()
+                );
+                renderOrders(filtered);
+            });
+    }
+
+    searchBtn.addEventListener('click', searchOrders);
+    emailInput.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+            searchOrders();
+        }
+    });
+</script>
+</body>
+</html>
