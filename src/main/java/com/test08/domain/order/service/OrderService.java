@@ -1,15 +1,17 @@
 package com.test08.domain.order.service;
 
 import com.test08.domain.order.dto.OrderForm;
+import com.test08.domain.order.dto.OrderResponse;
 import com.test08.domain.order.entity.Order;
 import com.test08.domain.order.entity.OrderStatus;
 import com.test08.domain.order.repository.OrderRepository;
 import com.test08.domain.product.entity.Product;
 import com.test08.domain.product.repository.ProductRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,5 +46,11 @@ public class OrderService {
             order.modifyOrderStatus();
         }
     }
-}
 
+    @Transactional(readOnly = true)
+    public List<OrderResponse> findAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(OrderResponse::from)
+                .toList();
+    }
+}

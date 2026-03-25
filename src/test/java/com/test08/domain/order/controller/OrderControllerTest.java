@@ -2,20 +2,25 @@ package com.test08.domain.order.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.test08.domain.order.dto.OrderForm;
+import com.test08.domain.order.dto.OrderResponse;
 import com.test08.domain.order.entity.Order;
+import com.test08.domain.order.entity.OrderStatus;
 import com.test08.domain.order.service.OrderService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,7 +34,9 @@ class OrderControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    //    @MockBean
+    // 스프링 프레임워크 업데이트로 인한 교체
+    @MockitoBean
     private OrderService orderService;
 
     @Test
@@ -104,5 +111,32 @@ class OrderControllerTest {
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.postCode").exists());
+    }
+
+    @Test
+    @DisplayName("관리자: 전체 주문 조회 API 호출 성공")
+    void getAllOrders_success() throws Exception {
+        // given
+        OrderResponse.OrderItemDetail itemDetail = new OrderResponse.OrderItemDetail("Columbia Nariño", 2, 5000);
+        OrderResponse response = new OrderResponse(
+                1L,
+                "test@test.com",
+                "서울시 강남구",
+                "12345",
+                10000,
+                OrderStatus.PENDING,
+                List.of(itemDetail),
+                LocalDateTime.now()
+        );
+
+        given(orderService.findAllOrders()).willReturn(List.of(response));
+
+        // when & then
+        mockMvc.perform(get("/api/orders")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].email").value("test@test.com"))
+                .andExpect(jsonPath("$[0].items[0].name").value("Columbia Nariño")) // 상품 상세 확인
+                .andExpect(jsonPath("$[0].updatedTime").exists()); // 수정 시각 확인
     }
 }

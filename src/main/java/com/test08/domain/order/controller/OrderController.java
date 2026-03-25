@@ -4,13 +4,12 @@ import com.test08.domain.order.dto.OrderForm;
 import com.test08.domain.order.dto.OrderResponse;
 import com.test08.domain.order.entity.Order;
 import com.test08.domain.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import jakarta.validation.Valid;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,5 +22,11 @@ public class OrderController {
     public ResponseEntity<OrderResponse> createOrder(@RequestBody @Valid OrderForm orderForm) {
         Order order = orderService.saveOrder(orderForm);
         return ResponseEntity.ok(OrderResponse.from(order));
+    }
+
+    // 전체 주문 관리 (관리자)
+    @GetMapping
+    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+        return ResponseEntity.ok(orderService.findAllOrders());
     }
 }
