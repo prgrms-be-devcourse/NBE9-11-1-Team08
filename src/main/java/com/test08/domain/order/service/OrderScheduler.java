@@ -10,7 +10,7 @@ public class OrderScheduler {
 
     private final OrderService orderService;
 
-    @Scheduled(cron = "1 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0 14 * * *", zone = "Asia/Seoul")
     public void processShipping() {
         orderService.modifyStatus();
     }
