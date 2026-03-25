@@ -153,7 +153,6 @@ class OrderControllerTest {
                 10000,
                 OrderStatus.SHIPPED,
                 List.of(itemDetail),
-                LocalDateTime.now().minusMinutes(5),
                 LocalDateTime.now()
         );
 
