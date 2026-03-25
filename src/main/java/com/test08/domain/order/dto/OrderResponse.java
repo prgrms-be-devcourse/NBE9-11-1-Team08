@@ -14,6 +14,7 @@ public record OrderResponse(
         int totalPrice,
         OrderStatus status,
         List<OrderItemDetail> items,
+        LocalDateTime firstOrderTime,
         LocalDateTime updatedTime
 ) {
     public record OrderItemDetail(
@@ -42,6 +43,7 @@ public record OrderResponse(
                 order.getTotalPrice(),
                 order.getStatus(),
                 itemDetails,
+                order.getFirstOrderTime(),
                 order.getUpdatedTime()
         );
     }
