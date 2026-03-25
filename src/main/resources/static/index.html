@@ -361,7 +361,7 @@
             renderCart();
             submitMessage.textContent = '주문이 완료되었습니다. 주문 번호: ' + orderResponse.orderId;
         } catch (error) {
-            submitMessage.textContent = '주문 처리에 실패했습니다. 입력값과 서버 상태를 확인해 주세요.';
+            submitMessage.textContent = "주문 처리에 실패했습니다. 입력한 정보와 주문 내용을 확인한 뒤 다시 시도해 주세요."
         } finally {
             submitOrderBtn.disabled = false;
         }

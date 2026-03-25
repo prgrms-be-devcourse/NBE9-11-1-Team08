@@ -9,5 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatus(OrderStatus status);
 
+    List<Order> findByEmailOrderByUpdatedTimeDesc(String email);
+
     Optional<Order> findByEmailAndAddressAndStatus(String email, String address, OrderStatus status);
 }
