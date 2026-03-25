@@ -23,7 +23,7 @@
             <input id="email" type="email" class="form-control" placeholder="example@email.com">
             <button id="searchBtn" class="btn btn-dark">조회</button>
         </div>
-        <div class="small text-muted mt-2">입력하신 이메일로 등록된 실시간 주문 상태를 서버에서 조회합니다.</div>
+        <div class="small text-muted mt-2">메인 화면에서 생성한 주문을 브라우저 기준으로 조회합니다.</div>
     </div>
 
     <div id="message" class="mb-3 text-muted"></div>
@@ -31,6 +31,7 @@
 </div>
 
 <script>
+
     const emailInput = document.getElementById('email');
     const searchBtn = document.getElementById('searchBtn');
     const message = document.getElementById('message');
@@ -41,12 +42,18 @@
     }
 
     function formatDate(value) {
-        if (!value) return '-';
+        if (!value) {
+            return '-';
+        }
+
         const date = new Date(value);
-        return Number.isNaN(date.getTime()) ? value : date.toLocaleString('ko-KR');
+        if (Number.isNaN(date.getTime())) {
+            return value;
+        }
+
+        return date.toLocaleString('ko-KR');
     }
 
-    // 서버에서 받아온 데이터를 화면에 그리는 함수
     function renderOrders(orders) {
         if (!orders.length) {
             message.textContent = '조회 결과가 없습니다.';
@@ -65,7 +72,7 @@
             }).join('');
 
             return '' +
-                '<div class="card p-3 shadow-sm">' +
+                '<div class="card p-3">' +
                 '<div class="d-flex justify-content-between align-items-start mb-2">' +
                 '<div>' +
                 '<div><b>주문번호:</b> ' + order.orderId + '</div>' +
@@ -75,7 +82,7 @@
                 '</div>' +
                 '<div class="text-end">' +
                 '<div><b>상태:</b> ' + order.status + '</div>' +
-                '<div><b>최종 업데이트:</b> ' + formatDate(order.updatedTime) + '</div>' +
+                '<div><b>주문시각:</b> ' + formatDate(order.firstOrderTime) + '</div>' +
                 '<div><b>총금액:</b> ' + formatPrice(order.totalPrice) + '</div>' +
                 '</div>' +
                 '</div>' +
@@ -84,8 +91,7 @@
         }).join('');
     }
 
-    // 서버 API를 직접 호출하여 데이터를 필터링하는 함수
-    async function searchOrders() {
+    function searchOrders() {
         const email = emailInput.value.trim();
         if (!email) {
             message.textContent = '이메일을 입력해 주세요.';
@@ -93,28 +99,14 @@
             return;
         }
 
-        message.textContent = '데이터를 불러오는 중...';
-
-        try {
-            // OrderController의 getAllOrders API 호출
-            const response = await fetch('/api/orders');
-            if (!response.ok) throw new Error('서버 응답 오류');
-
-            const allOrders = await response.json();
-
-            // 사용자가 입력한 이메일과 일치하는 주문만 필터링
-            const filteredOrders = allOrders.filter(order =>
-                order.email.toLowerCase() === email.toLowerCase()
-            );
-
-            // 최신순 정렬
-            filteredOrders.sort((a, b) => b.orderId - a.orderId);
-
-            renderOrders(filteredOrders);
-        } catch (error) {
-            console.error('Fetch error:', error);
-            message.textContent = '데이터를 불러오지 못했습니다. 서버 상태를 확인하세요.';
-        }
+        fetch('/api/orders')
+            .then(response => response.json())
+            .then(orders => {
+                const filtered = orders.filter(order =>
+                    order.email.toLowerCase() === email.toLowerCase()
+                );
+                renderOrders(filtered);
+            });
     }
 
     searchBtn.addEventListener('click', searchOrders);
