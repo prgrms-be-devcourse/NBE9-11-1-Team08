@@ -144,4 +144,21 @@ class OrderServiceTest {
         assertThat(result.get(1).email()).isEqualTo("user2@test.com");
         verify(orderRepository).findAll();
     }
+
+    @Test
+    @DisplayName("사용자: 이메일 기준 주문 목록 조회 성공")
+    void findOrdersByEmail_success() {
+        Product product = new Product(1, "Columbia Nariño", 5000, "img.jpg", "커피콩");
+        Order order = Order.create("user1@test.com", "서울시 강남구", "12345");
+        order.addOrMergeItem(product, 2);
+
+        given(orderRepository.findByEmailOrderByUpdatedTimeDesc("user1@test.com")).willReturn(List.of(order));
+
+        List<OrderResponse> result = orderService.findOrdersByEmail("user1@test.com");
+
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).email()).isEqualTo("user1@test.com");
+        assertThat(result.get(0).items().get(0).name()).isEqualTo("Columbia Nariño");
+        verify(orderRepository).findByEmailOrderByUpdatedTimeDesc("user1@test.com");
+    }
 }

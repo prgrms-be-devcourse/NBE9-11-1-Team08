@@ -53,4 +53,11 @@ public class OrderService {
                 .map(OrderResponse::from)
                 .toList();
     }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> findOrdersByEmail(String email) {
+        return orderRepository.findByEmailOrderByUpdatedTimeDesc(email).stream()
+                .map(OrderResponse::from)
+                .toList();
+    }
 }

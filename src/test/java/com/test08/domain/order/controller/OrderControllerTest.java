@@ -139,4 +139,29 @@ class OrderControllerTest {
                 .andExpect(jsonPath("$[0].items[0].name").value("Columbia Nariño")) // 상품 상세 확인
                 .andExpect(jsonPath("$[0].updatedTime").exists()); // 수정 시각 확인
     }
+
+    @Test
+    @DisplayName("사용자: 이메일 기준 주문 조회 API 호출 성공")
+    void getOrdersByEmail_success() throws Exception {
+        OrderResponse.OrderItemDetail itemDetail = new OrderResponse.OrderItemDetail("Columbia Nariño", 2, 5000);
+        OrderResponse response = new OrderResponse(
+                1L,
+                "test@test.com",
+                "서울시 강남구",
+                "12345",
+                10000,
+                OrderStatus.SHIPPED,
+                List.of(itemDetail),
+                LocalDateTime.now()
+        );
+
+        given(orderService.findOrdersByEmail("test@test.com")).willReturn(List.of(response));
+
+        mockMvc.perform(get("/api/orders")
+                        .param("email", "test@test.com")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].email").value("test@test.com"))
+                .andExpect(jsonPath("$[0].status").value("SHIPPED"));
+    }
 }

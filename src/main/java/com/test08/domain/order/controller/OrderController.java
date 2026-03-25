@@ -26,7 +26,11 @@ public class OrderController {
 
     // 전체 주문 관리 (관리자)
     @GetMapping
-    public ResponseEntity<List<OrderResponse>> getAllOrders() {
+    public ResponseEntity<List<OrderResponse>> getOrders(@RequestParam(required = false) String email) {
+        if (email != null && !email.isBlank()) {
+            return ResponseEntity.ok(orderService.findOrdersByEmail(email));
+        }
+
         return ResponseEntity.ok(orderService.findAllOrders());
     }
 }
