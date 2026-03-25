@@ -126,6 +126,7 @@ class OrderControllerTest {
                 10000,
                 OrderStatus.PENDING,
                 List.of(itemDetail),
+                LocalDateTime.now().minusMinutes(5),
                 LocalDateTime.now()
         );
 
